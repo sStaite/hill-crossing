@@ -21,6 +21,17 @@ function pathDNA(init_x, init_y) {
         cost: hill[init_x][init_y]
     }
 
+    this.xypath = [];
+
+    this.find_xypath = function() {
+        this.curr.x = this.init_x;
+        this.curr.y = this.init_y;
+        this.reached = false;
+        for (let i = 0; i < moves; i++) {
+            this.xypath.push([this.curr.x, this.curr.y])
+            this.update_position(i);
+        }
+    }
 
     this.path = [];
 
@@ -70,13 +81,21 @@ function pathDNA(init_x, init_y) {
 
     this.mutate = function(rate) {
         for (let i = 0; i < moves; i++) {
-            if (random(1) < rate) {
+            if (random() < rate) {
                 this.path[i] = random(directions);
             }
-
-            if (random(1) < rate) {
-                this.init_y = floor(random(height));
+        }
+        if (random() < rate) {
+            this.init_y += floor(0.05*height*random([-1, 1]));
+            if (this.init_y < 0) {
+                this.init_y = 0;
+            } else if (this.init_y >= height) {
+                this.init_y = height - 1;
             }
+        }
+
+        if (random() < rate) {
+            this.init_y = floor(random(0, height));
         }
     }
 

@@ -6,6 +6,8 @@ function Population(amount) {
 
     this.population = [];
 
+    this.best_route;
+
     this.populate = function() {
         for (let i = 0; i < this.amount; i++) {
             this.population[i] = new pathDNA(0, floor(random(height)));
@@ -51,16 +53,16 @@ function Population(amount) {
     this.find_fitness = function() {
 
         for (let i = 0; i < this.amount; i++) {
-            let curr_fitness = 1000 / (this.population[i].curr_fitness) ** 2;
+            let curr_fitness = (100 ** 5) / (this.population[i].curr_fitness ** 5);
 
 
-            // major penalty for not reaching the end;
-            if (!(this.population[i].reached)) {
-                curr_fitness *= 0.1;
-
-                // further gone gives more score
-                curr_fitness *= (this.population[i].curr.x / width);
-            }
+            // // major penalty for not reaching the end;
+            // if (!(this.population[i].reached)) {
+            //     curr_fitness *= 0.1;
+            //
+            //     // further gone gives more score
+            //     curr_fitness *= (this.population[i].curr.x / width);
+            // }
 
             this.population[i].fitness_score = curr_fitness;
 
@@ -129,7 +131,30 @@ function Population(amount) {
         if (max_fitness.print) {
             console.log('best fitness: ' + max_fitness.score);
         }
+
+        if (max_fitness.score == 0) {
+            this.best_route = this.population[max_fitness.idx];
+            climber_best();
+            noLoop();
+        }
     }
+
+
+}
+
+
+function climber_best() {
+    population.best_route.find_xypath();
+
+    let best_path = population.best_route.xypath;
+
+    reset_climbers();
+
+    for (let i = 0; i < best_path.length; i++) {
+        climber_positions[best_path[i][0]][best_path[i][1]] = 1;
+    }
+
+
 
 
 }
