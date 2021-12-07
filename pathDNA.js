@@ -85,14 +85,14 @@ function pathDNA(init_x, init_y) {
                 this.path[i] = random(directions);
             }
         }
-        if (random() < rate) {
-            this.init_y += floor(0.05*height*random([-1, 1]));
-            if (this.init_y < 0) {
-                this.init_y = 0;
-            } else if (this.init_y >= height) {
-                this.init_y = height - 1;
-            }
-        }
+        // if (random() < rate) {
+        //     this.init_y += floor(0.05*height*random([-1, 1]));
+        //     if (this.init_y < 0) {
+        //         this.init_y = 0;
+        //     } else if (this.init_y >= height) {
+        //         this.init_y = height - 1;
+        //     }
+        // }
 
         if (random() < rate) {
             this.init_y = floor(random(0, height));

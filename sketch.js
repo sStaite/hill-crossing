@@ -6,8 +6,8 @@ var capturer = new CCapture(
 
 // ffmpeg -r 240 -f image2 -s 540x540 -i "%07d.png" -vcodec libx264 -crf 17 -pix_fmt yuv420p output.mp4
 
-var pop_amount = 1000;
-var mutation_rate = 0.01;
+var pop_amount = 500;
+var mutation_rate = 0.05;
 
 var hill = [];
 var population;
@@ -76,7 +76,7 @@ function setup() {
 			if (depth < 0) depth = 0;
 			//if (depth > max_hill_height) depth = max_hill_height;
 
-			if (abs(x - y) < height / 10 || (abs(x - (100 - y)) < height / 10)) {
+			if (abs(x - y) < height / 10 || (abs(x - (height - y)) < height / 10)) {
 				depth = 0;
 			} else {
 				depth = random(100);
@@ -118,7 +118,7 @@ function setup() {
 function draw() {
 
 	if (frameCount === 1) {
-		//capturer.start();
+		capturer.start();
 	}
 
 	population.move_once(index);
@@ -187,7 +187,7 @@ function display_climbers() {
 		}
 
 		if (climber_positions[x][y] == 2) { // still moving, blue;
-			set(x, y, blue);
+			set(x, y, [0, 180, 225, 255]);
 		}
 	}
 	updatePixels();

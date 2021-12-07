@@ -151,7 +151,7 @@ function climber_best() {
     reset_climbers();
 
     for (let i = 0; i < best_path.length; i++) {
-        climber_positions[best_path[i][0]][best_path[i][1]] = 1;
+        climber_positions[best_path[i][0]][best_path[i][1]] = 2;
     }
 
 
