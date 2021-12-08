@@ -1,4 +1,6 @@
 
+var state = 'no_go';
+
 var capturer = new CCapture(
 	{format: 'png',
 	 framerate: 60}
@@ -36,72 +38,6 @@ function setup() {
 		climber_positions[i] = new Array(width).fill(0);
 	}
 
-	//
-	// for (let x = 0; x < width; x++) {
-	// 	for (let y = 0; y < height; y++) {
-	// 		//
-	// 		// if (abs(x_pos - x) < r && abs(y_pos - y) < r) {
-	// 		// 	depth = random(50, 100);
-	// 		// }
-	//
-	// 		let depth = 0;
-	//
-	// 		if (abs(abs(floor(height*tan(x)))-y) < 2) {
-	// 			let r = random(50, 100);
-	// 			depth = r;
-	// 		} else if (abs(abs(floor(height*sin(y)))-x) < 2) {
-	// 			let r = random(50, 100);
-	// 			depth = r;
-	// 		}
-	//
-	//
-	//
-	// 		hill[x][y] += depth;
-	// 	}
-	// }
-
-
-
-	for (let x = 0; x < width; x++) {
-		for (let y = 0; y < height; y++) {
-			let dist_from_vert = width -  abs(width /2 - x) * 2; // at most max_hill_height;
-			let dist_from_hori = height - abs(height/2 - y) * 2; // at most max_hill_height;
-
-			let r = random(-2, 2);
-
-			let depth = (dist_from_vert * dist_from_hori) / width +
-						(dist_from_vert + dist_from_hori) / 4 + r;
-
-			// ensure depth is valid for mapping later;
-			if (depth < 0) depth = 0;
-			//if (depth > max_hill_height) depth = max_hill_height;
-
-			if (abs(x - y) < height / 10 || (abs(x - (height - y)) < height / 10)) {
-				depth = 0;
-			} else {
-				depth = random(100);
-			}
-
-			hill[x][y] = depth;
-		}
-	}
-
-
-
-		// // create a valley through the mountain
-		//
-		// let x_val = width / 2 - x; // suppose the grid is a cartesian plane;
-		// let y_val = floor((pow(x_val, 3))/200) + height/2;
-		// if (y_val < height && y_val >= 0) {
-		// 	hill[x][y_val]   = floor(random(5, max_hill_height / 2));
-		// 	for (let num = 1; num < (height / 30) + 1; num++) {
-		// 		hill[x][y_val + num] = floor(random(5, max_hill_height / 2));
-		// 		hill[x][y_val + num] = floor(random(5, max_hill_height / 2));
-		// 	}
-		// }
-
-	// }
-
 	// display the hill;
 	display_hill();
 
@@ -117,43 +53,63 @@ function setup() {
 
 function draw() {
 
-	if (frameCount === 1) {
-		capturer.start();
-	}
+	if (state === 'no_go') {
 
-	population.move_once(index);
-	index ++;
-
-	if (population.all_finished || index === moves) {
-		generation++;
-
-		console.log('Gen ' + generation);
-
-		// reset index and climber position display
-		index = 0;
-		reset_climbers();
-
-		population.best_fitness();
-
-		// find each climber's fitness
-		population.find_fitness();
-
-		// reproduce
-		population.reproduce();
+		display_hill();
+		display_climbers();
 
 	}
 
-	display_hill();
-	display_climbers();
-	capturer.capture(document.getElementById('defaultCanvas0'));
 
-	//noLoop();
 
-	// if (generation == 30) {
-	// 	capturer.stop();
-	// 	capturer.save();
-	// 	noLoop();
-	// }
+
+
+	if (state === 'go') {
+
+		if (frameCount === 1) {
+			//capturer.start();
+		}
+
+		population.move_once(index);
+		index ++;
+
+		if (population.all_finished || index === moves) {
+			generation++;
+
+			console.log('Gen ' + generation);
+
+			// reset index and climber position display
+			index = 0;
+			reset_climbers();
+
+			population.best_fitness();
+
+			// find each climber's fitness
+			population.find_fitness();
+
+			// reproduce
+			population.reproduce();
+
+		}
+
+		display_hill();
+		display_climbers();
+		capturer.capture(document.getElementById('defaultCanvas0'));
+
+		//noLoop();
+
+		// if (generation == 30) {
+		// 	capturer.stop();
+		// 	capturer.save();
+		// 	noLoop();
+		// }
+
+
+
+	}
+
+
+
 }
 
 
@@ -197,6 +153,77 @@ function reset_climbers() {
 	for (let x = 0; x < width; x++) {
 		for (let y = 0; y < height; y++) {
 			climber_positions[x][y] = 0;
+		}
+	}
+}
+
+
+
+function keyPressed() {
+	if (keyCode === ENTER) {
+		state = 'go';
+	} else if (keyCode === 67) {
+		make_cross();
+	} else if (keyCode === 86) {
+	 	make_volcano();
+ 	}
+}
+
+
+function mouseDragged() {
+	let rad = height / 50;
+	for (let i = -rad; i < rad; i++) {
+		for (let j = -rad; j < rad; j++) {
+
+			hill[mouseX + i][mouseY + j] = random(height);
+
+
+		}
+	}
+
+}
+
+
+
+function make_cross() {
+	for (let x = 0; x < width; x++) {
+		for (let y = 0; y < height; y++) {
+			let dist_from_vert = width -  abs(width /2 - x) * 2; // at most max_hill_height;
+
+			if (abs(x - y) < height / 10 || (abs(x - (height - y)) < height / 10)) {
+				depth = 0;
+			} else {
+				depth = random(height);
+			}
+
+			hill[x][y] = depth;
+		}
+	}
+}
+
+
+
+function make_volcano() {
+
+	for (let x = 0; x < width; x++) {
+		for (let y = 0; y < height; y++) {
+
+			let dist_from_hori = height - abs(height/2 - y) * 2; // at most max_hill_height;
+			let dist_from_vert = width  - abs(width /2 - x) * 2; // at most max_hill_height;
+
+
+			let r = random(-2, 2);
+
+			let depth = (dist_from_vert * dist_from_hori) / width +
+						(dist_from_vert + dist_from_hori) / 4 + r;
+
+			// ensure depth is valid for mapping later;
+			if (depth < 0) depth = 0;
+			//if (depth > max_hill_height) depth = max_hill_height;
+
+
+			hill[x][y] = depth;
+
 		}
 	}
 }
