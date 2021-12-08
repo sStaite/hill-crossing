@@ -20,7 +20,7 @@ var total_pixels;
 var moves;
 
 function setup() {
-	createCanvas(100, 100);
+	createCanvas(75, 75);
 	background(0);
 	frameRate();
 	total_pixels = 4 * width * height;
@@ -171,7 +171,7 @@ function keyPressed() {
 
 
 function mouseDragged() {
-	let rad = height / 50;
+	let rad = floor(height / 50) + 1;
 	for (let i = -rad; i < rad; i++) {
 		for (let j = -rad; j < rad; j++) {
 
