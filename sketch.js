@@ -20,7 +20,7 @@ var total_pixels;
 var moves;
 
 function setup() {
-	createCanvas(75, 75);
+	createCanvas(100, 100);
 	background(0);
 	frameRate();
 	total_pixels = 4 * width * height;
